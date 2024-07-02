@@ -357,9 +357,7 @@ if __name__ == "__main__":
         rate = myfile.rate//8//4
         # Marantz: front:CARD=HDDAC1,DEV=0
         # iFi: front:CARD=Audio,DEV=0
-        out = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK, device="front:CARD='%s',DEV=0" % audiodev,\
-                            rate=rate, channels=2, periodsize=11025,\
-                            format=alsaaudio.PCM_FORMAT_DSD_U32_BE)    
+        out = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK, device="front:CARD='%s',DEV=0" % audiodev, format=alsaaudio.PCM_FORMAT_DSD_U32_BE)    
 
 #               device="front:CARD='%s',DEV=0" % audiodev)
 
