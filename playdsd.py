@@ -28,6 +28,7 @@ import os.path
 import re
 import sys, getopt, struct
 import signal
+from decode_dsf_for_xmos import dsfxmos
 
 # Make sure alsaaudio module is available
 try:
@@ -130,55 +131,6 @@ def dsdxmos(size, indata, outdata):
 		outdata[i+0x05] = indata[i+0x02]
 		outdata[i+0x06] = indata[i+0x04]
 		outdata[i+0x07] = indata[i+0x06]
-
-	outdata = str(outdata)
-
-	return outdata
-
-# revbits
-# Reverse bits if needed for DSF
-def revbits(x):
-	x = ((x & 0x55) << 1) | ((x & 0xaa) >> 1)
-	x = ((x & 0x33) << 2) | ((x & 0xcc) >> 2)
-	x = ((x & 0x0f) << 4) | ((x & 0xf0) >> 4)
-	return x
-
-# dsfxmos
-# Convert input DSF DSD data to correct order for XMOS native DSD playback
-def dsfxmos(size, indata, outdata, lsbfirst):
-
-	if lsbfirst == 1:
-
-		j = 0
-		for i in range(0, size, 8):
-			outdata[i+0x00] = revbits(indata[j+0x00])
-			outdata[i+0x01] = revbits(indata[j+0x01])
-			outdata[i+0x02] = revbits(indata[j+0x02])
-			outdata[i+0x03] = revbits(indata[j+0x03])
-			j += 4
-		j = 0
-		for i in range(0, size, 8):
-			outdata[i+0x04] = revbits(indata[j+4096+0x00])
-			outdata[i+0x05] = revbits(indata[j+4096+0x01])
-			outdata[i+0x06] = revbits(indata[j+4096+0x02])
-			outdata[i+0x07] = revbits(indata[j+4096+0x03])
-			j += 4
-
-	else:
-		j = 0
-		for i in range(0, size, 8):
-			outdata[i+0x00] = indata[j+0x00]
-			outdata[i+0x01] = indata[j+0x01]
-			outdata[i+0x02] = indata[j+0x02]
-			outdata[i+0x03] = indata[j+0x03]
-			j += 4
-		j = 0
-		for i in range(0, size, 8):
-			outdata[i+0x04] = indata[j+4096+0x00]
-			outdata[i+0x05] = indata[j+4096+0x01]
-			outdata[i+0x06] = indata[j+4096+0x02]
-			outdata[i+0x07] = indata[j+4096+0x03]
-			j += 4	
 
 	outdata = str(outdata)
 
@@ -333,9 +285,10 @@ out.setformat(alsaaudio.PCM_FORMAT_DSD_U32_BE)
 out.setperiodsize(11025)
 
 # Start with a few ms of DSD silence data
-playdsdsilence(myfile, 10)
+# playdsdsilence(myfile, 10)
 
 if myfile.type == "dsdiff":
+	print "Jayden: DSDIFF"
 	# DSDIFF playback	
 
 	# Play!
@@ -365,15 +318,18 @@ if myfile.type == "dsdiff":
 
 # DSF playback
 else:
+	print "Jayden: DSF"
 	rdsize = 8192
 	data = f.read(rdsize)
 	data = bytearray(data)
 	newdata = bytearray(data)
 
 	# Convert first block of DSD data
-	newdata = dsfxmos(rdsize, data, newdata, myfile.lsbfirst)
+	newdata = dsfxmos(rdsize, data, myfile.lsbfirst)
 	datasize = myfile.datasize - rdsize
 	remain = datasize
+
+	
 
 	while data:
 		out.write(newdata)
@@ -386,11 +342,11 @@ else:
 		data = bytearray(data)
 		newdata = bytearray(rdsize)
 
-		newdata = dsfxmos(rdsize, data, newdata, myfile.lsbfirst)
+		newdata = dsfxmos(rdsize, data, myfile.lsbfirst)
 
 
 # Play a few ms of DSD silence at the end
-playdsdsilence(myfile, 10)
+# playdsdsilence(myfile, 10)
 
 f.close()
 sys.exit(0)
