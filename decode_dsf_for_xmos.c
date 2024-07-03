@@ -1,4 +1,4 @@
-unsigned char revbits(unsigned char x)
+inline unsigned char revbits(unsigned char x)
 {
     x = ((x & 0x55) << 1) | ((x & 0xaa) >> 1);
     x = ((x & 0x33) << 2) | ((x & 0xcc) >> 2);
