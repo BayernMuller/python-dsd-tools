@@ -1,10 +1,4 @@
-inline unsigned char revbits(unsigned char x)
-{
-    x = ((x & 0x55) << 1) | ((x & 0xaa) >> 1);
-    x = ((x & 0x33) << 2) | ((x & 0xcc) >> 2);
-    x = ((x & 0x0f) << 4) | ((x & 0xf0) >> 4);
-    return x;
-}
+#include "bitreversed.h"
 
 void dsfxmos(int size, unsigned char *indata, unsigned char *outdata, int lsbfirst)
 {
@@ -13,14 +7,14 @@ void dsfxmos(int size, unsigned char *indata, unsigned char *outdata, int lsbfir
     {
         for (int i = 0; i < size; i += 8)
         {
-            outdata[i + 0x00] = revbits(indata[j + 0x00]);
-            outdata[i + 0x01] = revbits(indata[j + 0x01]);
-            outdata[i + 0x02] = revbits(indata[j + 0x02]);
-            outdata[i + 0x03] = revbits(indata[j + 0x03]);
-            outdata[i + 0x04] = revbits(indata[j + 4096 + 0x00]);
-            outdata[i + 0x05] = revbits(indata[j + 4096 + 0x01]);
-            outdata[i + 0x06] = revbits(indata[j + 4096 + 0x02]);
-            outdata[i + 0x07] = revbits(indata[j + 4096 + 0x03]);
+            outdata[i + 0x00] = bitreverse[indata[j + 0x00]];
+            outdata[i + 0x01] = bitreverse[indata[j + 0x01]];
+            outdata[i + 0x02] = bitreverse[indata[j + 0x02]];
+            outdata[i + 0x03] = bitreverse[indata[j + 0x03]];
+            outdata[i + 0x04] = bitreverse[indata[j + 4096 + 0x00]];
+            outdata[i + 0x05] = bitreverse[indata[j + 4096 + 0x01]];
+            outdata[i + 0x06] = bitreverse[indata[j + 4096 + 0x02]];
+            outdata[i + 0x07] = bitreverse[indata[j + 4096 + 0x03]];
             j += 4;
         }
     }
