@@ -1,4 +1,5 @@
-unsigned char revbits(unsigned char x) {
+unsigned char revbits(unsigned char x)
+{
     x = ((x & 0x55) << 1) | ((x & 0xaa) >> 1);
     x = ((x & 0x33) << 2) | ((x & 0xcc) >> 2);
     x = ((x & 0x0f) << 4) | ((x & 0xf0) >> 4);
@@ -10,7 +11,8 @@ void dsfxmos(int size, unsigned char *indata, unsigned char *outdata, int lsbfir
     int j = 0;
     if (lsbfirst == 1)
     {
-        for (int i = 0; i < size; i += 8) {
+        for (int i = 0; i < size; i += 8)
+        {
             outdata[i + 0x00] = revbits(indata[j + 0x00]);
             outdata[i + 0x01] = revbits(indata[j + 0x01]);
             outdata[i + 0x02] = revbits(indata[j + 0x02]);
@@ -21,12 +23,12 @@ void dsfxmos(int size, unsigned char *indata, unsigned char *outdata, int lsbfir
             outdata[i + 0x07] = revbits(indata[j + 4096 + 0x03]);
             j += 4;
         }
-
     }
-    else 
+    else
     {
         j = 0;
-        for (int i = 0; i < size; i += 8) {
+        for (int i = 0; i < size; i += 8)
+        {
             outdata[i + 0x00] = indata[j + 0x00];
             outdata[i + 0x01] = indata[j + 0x01];
             outdata[i + 0x02] = indata[j + 0x02];
